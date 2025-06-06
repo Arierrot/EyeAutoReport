@@ -20,6 +20,16 @@ Este repositorio contiene un pipeline completo para:
 4. **Estadística**: obtención de métricas (media, std, simetría lateral, normalidad...).
 5. **Visualización**: creación de informes gráficos con superposición de capas, gradientes de distancia, histogramas y tablas.
 
+## Ejecución
+
+1) De forma interactiva en Jupyter Notebook (`eye_report.ipynb`)
+
+2) De forma automática por terminal 
+   El script `auto_eye_report.py` permite procesar todas las imágenes de una carpeta y generar informes automáticamente.
+   
+```bash
+python src/auto_eye_report.py path/a/mis_imagenes/ path/destino/output/
+```
 ## Requisitos
 
 El entorno fue probado con las siguientes versiones:
