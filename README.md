@@ -42,3 +42,17 @@ pandas==2.3.0
 scipy==1.15.3
 seaborn==0.13.2
 skimage==0.0
+```
+
+Instala las dependencias necesarias ejecutando:
+```
+pip install -r requirements.txt
+```
+
+## Datos
+
+Las imágenes utilizadas en este proyecto provienen del conjunto distribuido por el profesorado a través del Moodle del Máster en Bioinformática para las Ciencias de la Salud (curso 2024/2025).
+
+Por razones de privacidad y derechos, **no se incluyen las imágenes reales en este repositorio público**. Puedes emplear tus propias imágenes AS-OCT (en escala de grises) ubicándolas en un directorio como `Dataset AS-OCT/AS-OCT/`.
+
+> El script y notebook procesan cualquier imagen en formato compatible (JPG, PNG, etc.).
