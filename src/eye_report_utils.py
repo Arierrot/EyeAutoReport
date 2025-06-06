@@ -367,9 +367,6 @@ def calcular_estadisticas(d12, d23, d13, plot=True):
     # Imprimir las métricas si se desea
     if plot==True:
         # Mostrar resumen por consola
-        print("-"*30)
-        print(f"Estadísticas para {image}")
-        print("-"*30)
         for key, value in metrics.items():
             print(f"{key}: {value:.2f}")
     
