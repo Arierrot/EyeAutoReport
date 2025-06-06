@@ -119,6 +119,98 @@ def cargar_imagenes(path, plot=True):
     return images, image_names
 
 
+def preprocesado_imagen(image, image_name="", plot=True):
+    """
+    Función para eliminar ruido y resaltar bordes horizontales mediante técnicas morfológicas.
+
+    Parámetros:
+    - image: imagen en escala de grises a procesar.
+    - image_name: nombre de la imagen (para título si se muestra).
+    - plot: si es True, se visualizan las etapas del proceso.
+
+    Devuelve:
+    - close: imagen binaria con las capas resaltadas (última etapa del procesamiento).
+    """
+    
+    # Aplicar filtro de mediana para quitar moteado
+    img_filtered = cv2.medianBlur(image, 11)
+
+    # Detectar bordes horizontales (sobel eje y)
+    sobel_y = cv2.Sobel(img_filtered, cv2.CV_64F, 0, 1, ksize=3)
+    sobel_y_abs = np.abs(sobel_y)
+    
+    # Umbralización
+    sobel_y_abs = np.uint8(sobel_y_abs)
+    thr, dst = cv2.threshold(sobel_y_abs, 17, 255, cv2.THRESH_BINARY)
+    # dst = cv2.adaptiveThreshold(sobel_y_abs, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 21, 12)
+
+    # Apertura (con kernel lineal horizontal para cerrar istmos entre líneas y ruido)
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5,1))
+    opening1 = cv2.morphologyEx(dst, cv2.MORPH_OPEN, kernel, iterations = 1)
+
+    # Perfil de intensidades
+    perfil_bordes = np.mean(opening1, axis=1)
+
+    # Segmentación
+    num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(opening1)
+
+    # Crear una máscara para filtrar los objetos pequeños y el borde
+    filtered_mask = np.zeros_like(opening1)
+
+    # Definir un umbral para eliminar puntos pequeños (ruido) y borde exterior
+    area_threshold_min = 5000 # para eliminar puntos/manchas
+    # area_threshold_max = 1000000
+    
+    # Eliminar borde exterior y ruido mediante filtro de área
+    for i in range(1, num_labels):  # Evitamos el fondo (label 0)
+        _, _, _, _, area = stats[i] # area: Cantidad de píxeles del objeto detectado
+        if area > area_threshold_min:
+            filtered_mask[labels == i] = 255  
+
+    # Apertura (volver a separar posibles istmos)
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5,1))
+    opening2 = cv2.morphologyEx(filtered_mask, cv2.MORPH_OPEN, kernel, iterations = 1)
+
+    # Cierre para rellenar líneas de capas (devolveremos esta última)
+    close = cv2.morphologyEx(opening2, cv2.MORPH_CLOSE, (3,3), iterations = 6)
+
+    if plot==True:
+        # Visualizar antes y después
+        fig, ax = plt.subplots(3,3, figsize=(12,10))
+
+        ax[0,0].imshow(image, cmap='gray')
+        ax[0,0].set_title("{} | Imagen original".format(image_name))
+
+        ax[0,1].imshow(img_filtered, cmap='gray')
+        ax[0,1].set_title("Filtrado de mediana (eliminar ruido)")
+
+        ax[0,2].imshow(sobel_y_abs, cmap='gray')
+        ax[0,2].set_title("Sobel Y (bordes horizontales)")
+
+        ax[1,0].imshow(dst, cmap='gray')
+        ax[1,0].set_title("Umbral binario (resaltar bordes)")
+
+        ax[1,1].imshow(opening1, cmap='gray')
+        ax[1,1].set_title("Apertura horizontal (limpieza)")
+
+        ax[1,2].plot(perfil_bordes)
+        ax[1,2].grid(True)
+        ax[1,2].set_title("Perfil vertical (recuento por fila)")
+
+        ax[2,0].imshow(labels, cmap='nipy_spectral')
+        ax[2,0].set_title("Segmentación")
+
+        ax[2,1].imshow(filtered_mask, cmap='gray')
+        ax[2,1].set_title("Filtro por área + apertura")
+
+        ax[2,2].imshow(close, cmap='nipy_spectral')
+        ax[2,2].set_title("Cierre morfológico (reconstrucción)")
+
+        plt.show()
+
+    return close
+
+
 def detectar_picos(columna, n_picos=3, min_dist=20):
     """
     Función para detectar las posiciones de los primeros picos no nulos en una columna.
