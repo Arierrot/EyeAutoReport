@@ -23,6 +23,61 @@ import seaborn as sns
 ############################### FUNCIONES ##############################
 ########################################################################
 
+# colores para usar con la función print()
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+
+def print_error(text: str):
+    '''
+    Nombre:     print_error
+    Propósito:  devolver un texto en color amarillo.
+    Requiere:   un string.
+    Devuelve:   un string formateado.
+    '''
+    print(bcolors.WARNING + text + bcolors.ENDC)
+
+
+def path_input(path):
+    '''
+    Nombre:     path_input
+    Propósito:  comprueba si la ruta (absoluta o relativa) existe.
+    Requiere:   un string correspondiente al nombre de archivo (si el 
+                directorio de trabajo contiene el archivo), o bien una 
+                ruta relativa o absoluta al archivo.
+    Devuelve:   un string correspondiente a la ruta absoluta de un archivo.
+    '''
+    
+    # comprobamos primero si el input ya es una ruta absoluta
+    if os.path.exists(path):
+        # si es ruta absoluta, devuelve directamente el input
+        return path
+
+    # comprobamos si es un archivo del directorio de trabajo o una ruta relativa
+    else:
+        # obtenemos el directorio de trabajo actual
+        actual_path = os.getcwd()
+        # unimos el directorio y la ruta relativa o nombre de archivo
+        new_path = os.path.join(actual_path, path)
+        # comprobamos si ahora existe el archivo con la ruta absoluta
+        is_file = os.path.exists(new_path)
+        # si es ruta relativa o archivo, devuelve la nueva ruta
+        if is_file == True:
+            return new_path
+        
+        # ERROR
+        print(bcolors.WARNING + "\nERROR:\nEl input no se corresponde con una ruta válida ni con\nun nombre de archivo del directorio de trabajo actual\n" + bcolors.ENDC)
+
+
+
 def cargar_imagenes(path, plot=True):
     """
     Función para cargar y visualizar imágenes en escala de grises desde un directorio.
