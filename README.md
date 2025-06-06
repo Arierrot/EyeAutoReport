@@ -7,7 +7,7 @@ Desarrollé un método automatizado para segmentar capas corneales en imágenes 
 La herramienta permite la obtención rápida de informes gráficos con superposición de capas, gradientes de distancia, histogramas y tablas.
 
 <p align="center">
-  <img src="reports/im3_informe.pdf">
+  <img src="EyeAutoReport\icons\im3_informe_page-0001.jpg">
 </p>
 
 ## Descripción
