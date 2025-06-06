@@ -501,7 +501,7 @@ def visualizar_lineas_centrales_con_leyenda(img_original, y1, y2, y3, dist12, di
     return img_color
 
 
-def eye_report(input_path, output_path=None):
+def eye_report(input_path, output_path=None, plot=False):
     """
     Función final que genera un informe visual para cada imagen del directorio.
 
@@ -642,4 +642,5 @@ def eye_report(input_path, output_path=None):
             export_path = os.path.join(output_path, filename)
             fig.savefig(export_path, format='pdf', bbox_inches='tight')
         
-        plt.show()
+        if plot == True:
+            plt.show()
